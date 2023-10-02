@@ -6,10 +6,13 @@ from tasks.serializers import TaskSerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    # permission_classes = [IsAuthenticated]
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
 
+    def get_permissions(self):
+        if self.request.method in ('POST', 'DELETE'):
+            return [IsAuthenticated()]
+        return [permission() for permission in self.permission_classes]
+
     def perform_create(self, serializer):
-        print()
         serializer.save(created_by=self.request.user)
